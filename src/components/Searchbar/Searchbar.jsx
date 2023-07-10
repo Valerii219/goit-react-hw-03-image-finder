@@ -1,15 +1,24 @@
-<header class="searchbar">
-  <form class="form">
-    <button type="submit" class="button">
-      <span class="button-label">Search</span>
+import css from 'styles.module.css';
+
+const Searchbar = (onSubmit)=>{
+  return(
+<header className={css.Searchbar}>
+  <form className={css.SearchForm} onSubmit={onSubmit}>
+    <button type="submit" className={css.SearchFormButton}>
+      <span className={css.SearchFormButtonLabel}>Search</span>
     </button>
 
     <input
-      class="input"
+      className={css.SearchFormInput}
       type="text"
-      autocomplete="off"
-      autofocus
+      autoComplete="off"
+      autoFocus
       placeholder="Search images and photos"
+      
     />
   </form>
 </header>
+  )
+}
+
+export default Searchbar;
