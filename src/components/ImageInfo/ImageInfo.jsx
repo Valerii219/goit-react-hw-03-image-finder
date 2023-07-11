@@ -22,3 +22,5 @@ if(prevProps.imageName !== this.props.imageName){
     }
 }
 export default ImageInfo;
+
+{/* <img class = img-card src="${webformatURL}" alt="${tags}" loading="lazy"  data-source="${largeImageURL}"/> */}
