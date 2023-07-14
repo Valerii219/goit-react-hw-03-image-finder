@@ -1,20 +1,15 @@
-import {ImageGalleryItem} from '../ImageGalleryItem/ImageGalleryItem'
-import css from 'styles.module.css'
+import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
+import css from 'styles.module.css';
 
-
-
-function  ImageGallery({images}) {
-  return(
+export function ImageGallery({ images }) {
+  if (!images) {
+    return null;
+  }
+  return (
     <ul className={css.ImageGallery}>
-    {images.map(image=>{
-      <ImageGalleryItem
-      key ={image.id}
-      webformatURL ={image.webformatURL }
-      largeImageURL = {image.largeImageURL }
-      />
-    })}
-  </ul>
-  )
-
+      {images.map((el) => (
+        <ImageGalleryItem key={el.id} webformatURL={el.webformatURL} />
+      ))}
+    </ul>
+  );
 }
-export default ImageGallery;

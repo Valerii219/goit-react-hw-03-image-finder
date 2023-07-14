@@ -1,63 +1,64 @@
-const { Component } = require("react");
+import React, { Component } from "react";
+import { getImages } from '../../services/getImages';
+import { ImageGallery } from '../ImageGallery/ImageGallery';
+import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
 
 class ImageInfo extends Component {
   state = {
-    images: null,
+    images: [],
     error: null,
-    status:"idle"
+    status: "idle",
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.images !== this.props.images) {
-      this.setState({ status:"pending", });
-      fetch(
-        `https://pixabay.com/api/?q=${this.props.images}&page=1&key=36861352-2474982a97ff1b570eda1c4c2&image_type=photo&orientation=horizontal&per_page=12`
-      )
+    if (prevProps.searchText !== this.props.searchText) {
+      this.setState({ status: "pending" });
+      getImages(this.props.searchText)
         .then((response) => {
           if (response.ok) {
             return response.json();
           }
-          throw new Error(`No images found for ${this.props.images}`);
+          throw new Error(`No images found for ${this.props.searchText}`);
         })
         .then((data) => {
           if (data.hits.length > 0) {
-            this.setState({ image: data.hits[1], status:'resolved' });
+            const images = data.hits.map((image) => ({
+              id: image.id,
+              webformatURL: image.webformatURL,
+              largeImageURL: image.largeImageURL,
+            }));
+            this.setState({ images, status: "resolved" });
           } else {
-            throw new Error(`No images found for ${this.props.images}`);
+            return Promise.reject(`No images found for ${this.props.searchText}`);
           }
         })
-        .catch((error) => this.setState({ error, status: 'rejected'}))
-        
+        .catch((error) => {
+          this.setState({ error, status: "rejected" });
+        });
     }
   }
 
   render() {
-    const { image,  error, status } = this.state;
-    if(status === "idle"){
-     return <div>Please enter an image name</div>
+    const { error, status, images } = this.state;
+    if (status === "idle") {
+      return <div>Please enter an image name</div>;
     }
-    if(status === "pending"){
-        return <div>Loading</div>
+    if (status === "pending") {
+      return <div>Loading</div>;
     }
-    if(status === 'rejected'){
-        return <h1>{error.message}</h1>
+    if (status === "rejected") {
+      return <h2>{error.message}</h2>;
     }
-    if(status === "resolved"){
-        return (
-            <div>
-              <h1>ImageInfo</h1>
-             <img src={image.webformatURL} alt="" />
-            </div>
-          );
+    if (status === "resolved") {
+      return (
+        <div>
+          <h1>ImageInfo</h1>
+          <ImageGallery images={images} />
+          <ImageGalleryItem images={images} />
+        </div>
+      );
     }
-    
   }
 }
 
 export default ImageInfo;
-
-// {/* <img class = img-card src="${webformatURL}" alt="${tags}" loading="lazy"  data-source="${largeImageURL}"/> */}
-// idle 
-// pending 
-// resolved
-// rejected
