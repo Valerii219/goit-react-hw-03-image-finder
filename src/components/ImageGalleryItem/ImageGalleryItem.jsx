@@ -1,9 +1,8 @@
 import css from 'styles.module.css'
 
-function ImageGalleryItem({images: { id,webformatURL, largeImageURL }}){
+function ImageGalleryItem( { id,webformatURL }){
   return(
 <li key ={id} className={css.ImageGalleryItem}>
-  {/* <a className="" href={largeImageURL}/> */}
   <img src={webformatURL} alt="" className={css.ImageGalleryItemImage} />
 </li>
   )
