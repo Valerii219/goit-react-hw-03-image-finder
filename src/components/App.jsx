@@ -24,42 +24,45 @@ class App extends Component {
   }
  
 
-  componentDidUpdate(prevProps, prevState) {
+ 
+  getData=()=>{
     const { perPage, page, searchText } = this.state;
-    if (prevState.searchText !== searchText) {
-      
-      this.setState({ loading: true, images: [], error: null, page:1,});
-      getImages(searchText,  page , perPage)
+    getImages(searchText,  page , perPage)
      
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          }
-          return Promise.reject(`No images found for ${searchText}`);
-        })
-        .then((data) => {
-          if (data.hits.length > 0) {
-            const images = data.hits.map((image) => ({
-              id: image.id,
-              webformatURL: image.webformatURL,
-              largeImageURL: image.largeImageURL,
-            }));
-          this.setState((prevState) => ({
-              images: [...prevState.images, ...images],
-              totalPages: Math.ceil(data.totalHits / perPage),
-            }));
-          } else {
-            throw new Error(`No images found for ${searchText}`);
-          }
-        })
-        .catch((error) => {
-          this.setState({ images: [], error });
-        })
-        .finally(() => this.setState({ loading: false }));
-    }
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      return Promise.reject();
+    })
+    .then((data) => {
+      if (data.hits.length > 0) {
+        const images = data.hits.map((image) => ({
+          id: image.id,
+          webformatURL: image.webformatURL,
+          largeImageURL: image.largeImageURL,
+        }));
+      this.setState((prevState) => ({
+          images: [...prevState.images, ...images],
+          totalPages: Math.ceil(data.totalHits / perPage),
+        }));
+      } else {
+        throw new Error(`No images found for ${searchText}`);
+      }
+    })
+    .catch((error) => {
+      this.setState({ images: [], error });
+    })
+    .finally(() => this.setState({ loading: false }));
   
+  } 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.searchText !== this.state.searchText) {
+      this.setState({ loading: true, images: [], error: null, page:1,});
+      this.getData()
+    }
   }
-  loadMore = () => {
+loadMore = () => {
     const { page,  totalPages} = this.state;
     if (page < totalPages ) {
       this.setState(
@@ -68,14 +71,12 @@ class App extends Component {
       
         }),
         () => {
-          getImages()
+          this.getData()
         }
       );
     }
   }
-  
-
-  render() {
+render() {
     const { images, loading, error } = this.state;
 
     return (
@@ -90,5 +91,4 @@ class App extends Component {
     );
   }
 }
-
 export default App;
