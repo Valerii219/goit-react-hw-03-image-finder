@@ -1,9 +1,9 @@
 import css from 'styles.module.css'
 
-function ImageGalleryItem( { id,webformatURL }){
+function ImageGalleryItem( { id,webformatURL, onClick }){
   return(
-<li key ={id} className={css.ImageGalleryItem}>
-  <img src={webformatURL} alt="" className={css.ImageGalleryItemImage} />
+<li key ={id} className={css.ImageGalleryItem} onClick={() => onClick({id})}>
+  <img src={webformatURL} alt={webformatURL} className={css.ImageGalleryItemImage}  onClick={() => onClick({webformatURL})}/>
 </li>
   )
 }
