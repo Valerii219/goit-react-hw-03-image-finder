@@ -20,6 +20,7 @@ class App extends Component {
     data:[],
     showModal: false,
     modalImage: "",
+    loadButton:false,
   }
 
   searchSubmit = (searchText) => {
@@ -45,19 +46,20 @@ class App extends Component {
           this.setState((prevState) => ({
             images: [...prevState.images, ...images],
             totalPages: Math.ceil(data.totalHits / perPage),
+            loadButton: images.length >= 12 ? true : false,
           }));
         } else {
           throw new Error(`No images found for ${searchText}`);
         }
       })
       .catch((error) => {
-        this.setState({ images: [], error });
+        this.setState({ images: [], error,  loadButton: false });
       })
       .finally(() => this.setState({ loading: false }));
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { searchText, page } = this.state;
+    const { searchText, page} = this.state;
     if (prevState.searchText !== searchText || prevState.page !== page) {
       this.setState({ loading: true });
       this.getData();
@@ -66,12 +68,12 @@ class App extends Component {
 
   loadMore = () => {
     const { page, totalPages } = this.state;
-    if (page < totalPages ) {
-      this.setState(
-        (prevState) => ({
-          page: prevState.page + 1,
-        })
-      );
+    if (page < totalPages) {
+      this.setState((prevState) => ({
+        page: prevState.page + 1,
+      }));
+    } else {
+      this.setState({ loadButton: false });
     }
   }
 
@@ -90,7 +92,7 @@ class App extends Component {
   }
 
   render() {
-    const { images, loading, error, modalImage } = this.state;
+    const { images, loading, error, modalImage, loadButton} = this.state;
 
     return (
       <div>
@@ -98,7 +100,7 @@ class App extends Component {
         {loading && <WatchSpinner />}
         {error && <div>{error.message}</div>}
         <ImageGallery propsImage={images} showModal={this.showModal} />
-        {images.length > 0 && <LoadMore loadMore={this.loadMore} />}
+        {loadButton && <LoadMore loadMore={this.loadMore} />}
         <ToastContainer autoClose={3000} />
         {this.state.showModal && <Modal modalImage={modalImage} onCloseModal={this.closeModal}/>}
       </div>
